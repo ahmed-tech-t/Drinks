@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Drinks</string>
+    <string name="login">Login</string>
+    <string name="registration">Registration</string>
+    <string name="signup">Signup</string>
+
+</resources>
