@@ -52,11 +52,11 @@ fun DrinksScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(20.dp),
+            .padding(horizontal = 20.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        SearchBar(hint = "Search") { query ->
+        SearchBar(hint = "Search" , modifier = Modifier.padding(vertical = 10.dp)) { query ->
             viewModel.search(query)
         }
 
@@ -104,6 +104,7 @@ fun Item(
                 )
             )
             .clickable {
+                //TODO MUST SEND COCKTAIL DETAILS FROM HERE TO BOTTOM DIALOG BEFORE NAVIGATE
                 onNavigate(UiEvent.Navigate(Route.Details.route))
             }) {
         Column {

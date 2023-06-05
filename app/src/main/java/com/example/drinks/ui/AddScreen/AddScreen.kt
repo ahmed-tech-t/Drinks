@@ -11,15 +11,12 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -34,18 +31,24 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.drinks.R
 import com.example.drinks.model.Cocktail
 import com.example.drinks.model.Drink
 import com.example.drinks.model.DrinkCocktail
+import com.example.drinks.ui.AddScreen.AddViewModel
+import com.example.drinks.ui.components.MainButton
 import com.example.drinks.utils.Route
 import com.example.drinks.utils.UiEvent
 
 
 @Composable
 fun AddScreen(
-    onNavigate: (UiEvent.Navigate) -> Unit
+    onNavigate: (UiEvent.Navigate) -> Unit, viewModel: AddViewModel = hiltViewModel()
 ) {
+    var cocktailState by remember {
+        mutableStateOf<Cocktail?>(null)
+    }
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
             verticalArrangement = Arrangement.Center,
@@ -56,40 +59,41 @@ fun AddScreen(
             Spacer(modifier = Modifier.height((30.dp)))
             Text(text = "Make your drink", fontSize = 18.sp, fontWeight = FontWeight.Medium)
             Spacer(modifier = Modifier.height(20.dp))
-            DrinksGridList()
+            DrinksGridList() { cocktail ->
+                cocktailState = cocktail
+            }
         }
-
-        Button(
-            onClick = { onNavigate(UiEvent.Navigate(Route.AddDetails.route)) },
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(20.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color.Blue
-            )
-
+        MainButton(
+            text = "Next", modifier = Modifier.align(Alignment.BottomEnd)
         ) {
-            Text(text = "Next")
+            //TODO CHECK IF THERE IS ANY ADDED DRINK TO THIS COCKTAIL BEFORE GOTO NEXT PAGE
+            viewModel.addCocktail(cocktailState)
+            onNavigate(UiEvent.Navigate(Route.AddDetails.route))
         }
     }
 }
 
 @Composable
 fun DrinksGridList(
-    list: List<Drink> = drinksList_1(),
-    modifier: Modifier = Modifier,
+    list: List<Drink> = drinksList_1(), modifier: Modifier = Modifier, cocktail: (Cocktail?) -> Unit
 ) {
 
     val cocktailState by remember {
-        mutableStateOf(Cocktail())
+        mutableStateOf<Cocktail?>(null)
     }
     LazyVerticalGrid(columns = GridCells.Fixed(3), modifier = modifier) {
         items(list.size) { index ->
             DrinkItem(item = list[index]) { newDrinkCocktail ->
-                val pos: Int? = cocktailState.drinks?.indexOf(newDrinkCocktail)
+                val pos: Int? = cocktailState?.drinks?.indexOf(newDrinkCocktail)
                 if (pos != -1) {
-                    pos?.let { cocktailState.drinks?.set(it, newDrinkCocktail) }
-                } else cocktailState.drinks?.add(newDrinkCocktail)
+                    pos?.let {
+                        cocktailState?.drinks?.set(it, newDrinkCocktail)
+                        cocktail(cocktailState)
+                    }
+                } else {
+                    cocktailState?.drinks?.add(newDrinkCocktail)
+                    cocktail(cocktailState)
+                }
             }
         }
     }
@@ -97,8 +101,7 @@ fun DrinksGridList(
 
 @Composable
 fun DrinkItem(
-    item: Drink,
-    currentDrinkCocktail: (DrinkCocktail) -> Unit
+    item: Drink, currentDrinkCocktail: (DrinkCocktail) -> Unit
 ) {
     var counter by remember {
         mutableStateOf(0)
@@ -147,15 +150,15 @@ fun DrinkItem(
 
 @Composable
 fun MinMaxButton(text: String, onclick: () -> Unit) {
-    Box(contentAlignment = Alignment.CenterStart, modifier = Modifier
-        .size(30.dp)
-        .aspectRatio(1f)
-        .clip(CircleShape)
-        .background(Color.LightGray)
-        .clickable {
-            onclick()
-        }
-    ) {
+    Box(contentAlignment = Alignment.CenterStart,
+        modifier = Modifier
+            .size(30.dp)
+            .aspectRatio(1f)
+            .clip(CircleShape)
+            .background(Color.LightGray)
+            .clickable {
+                onclick()
+            }) {
         Text(
             text = text,
             fontWeight = FontWeight.Medium,
@@ -202,5 +205,5 @@ fun drinksList_1() = listOf(
     ),
 
 
-)
+    )
 
