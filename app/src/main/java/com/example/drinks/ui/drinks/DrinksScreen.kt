@@ -176,61 +176,51 @@ fun drinksList() = listOf(
         name = "Drink 1",
         description = "Description of Drink 1",
         image = R.drawable.img_1,
-        combinations = listOf(Combination(1, 10), Combination(2, 20))
     ),
     Drink(
         name = "Drink 2",
         description = "Description of Drink 2",
         image = R.drawable.img_2,
-        combinations = listOf(Combination(3, 15), Combination(4, 25))
     ),
     Drink(
         name = "Drink 3",
         description = "Description of Drink 3",
         image = R.drawable.img_3,
-        combinations = listOf(Combination(3, 15), Combination(4, 25))
     ),
     Drink(
         name = "Drink 4",
         description = "Description of Drink 4",
         image = R.drawable.img_4,
-        combinations = listOf(Combination(3, 15), Combination(4, 25))
     ),
     Drink(
         name = "Drink 5",
         description = "Description of Drink 5",
         image = R.drawable.img_5,
-        combinations = listOf(Combination(3, 15), Combination(4, 25))
     ),
     Drink(
         name = "Drink 6",
         description = "Description of Drink 6",
         image = R.drawable.img_6,
-        combinations = listOf(Combination(3, 15), Combination(4, 25))
     ),
     Drink(
         name = "Drink 7",
         description = "Description of Drink 7",
         image = R.drawable.img_7,
-        combinations = listOf(Combination(3, 15), Combination(4, 25))
     ),
     Drink(
         name = "Drink 8",
         description = "Description of Drink 8",
         image = R.drawable.img_8,
-        combinations = listOf(Combination(3, 15), Combination(4, 25))
     ),
     Drink(
         name = "Drink 9",
         description = "Description of Drink 9",
         image = R.drawable.img_9,
-        combinations = listOf(Combination(3, 15), Combination(4, 25))
     ),
     Drink(
         name = "Drink 10",
         description = "Description of Drink 10",
         image = R.drawable.img_10,
-        combinations = listOf(Combination(3, 15), Combination(4, 25))
     ),
 )
 

@@ -12,5 +12,4 @@ data class Drink @Inject constructor(
     val name: String,
     val description: String,
     val image: Int,
-    val combinations: List<Combination>
 )
