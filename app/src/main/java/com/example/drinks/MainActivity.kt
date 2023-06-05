@@ -13,8 +13,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.drinks.ui.AddScreen.AddDetailsScreen
-import com.example.drinks.ui.AddScreen
+import com.example.drinks.ui.add.AddDetailsScreen
+import com.example.drinks.ui.add.AddScreen
 import com.example.drinks.ui.BottomNavigationBar
 import com.example.drinks.ui.DrinksScreen
 import com.example.drinks.ui.theme.DrinksTheme

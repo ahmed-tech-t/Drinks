@@ -1,19 +1,36 @@
 package com.example.drinks.utils
 
+import android.net.Uri
 import androidx.room.TypeConverter
-import com.example.drinks.model.Combination
+import com.example.drinks.model.DrinkCocktail
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
 
 class Converters {
-    @TypeConverter
-    fun fromCombinationToGson(combination: List<Combination>): String = Gson().toJson(combination)
 
     @TypeConverter
-    fun fromGsonToCombination(combinationString: String): List<Combination> {
-        val listType = object : TypeToken<List<Combination>>() {}.type
-        return Gson().fromJson(combinationString, listType)
+    fun fromDrinkCocktailListToGson(drinkCocktail: ArrayList<DrinkCocktail>): String =
+        Gson().toJson(drinkCocktail)
+
+    @TypeConverter
+    fun fromGsonToDrinkCocktailList(drinkCocktailString: String): ArrayList<DrinkCocktail> {
+        val listType = object : TypeToken<ArrayList<DrinkCocktail>>() {}.type
+        return Gson().fromJson(drinkCocktailString, listType)
     }
+
+    @TypeConverter
+    fun fromDrinkCocktailToGson(drinkCocktail: DrinkCocktail): String = Gson().toJson(drinkCocktail)
+
+    @TypeConverter
+    fun fromGsonToDrinkCocktail(drinkCocktailString: String): DrinkCocktail =
+        Gson().fromJson(drinkCocktailString, DrinkCocktail::class.java)
+
+    @TypeConverter
+    fun fromUriToGson(uri: Uri): String = Gson().toJson(uri)
+
+    @TypeConverter
+    fun fromGsonToUri(uriString: String): Uri =
+        Gson().fromJson(uriString, Uri::class.java)
 
 }

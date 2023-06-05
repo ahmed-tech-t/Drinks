@@ -1,4 +1,4 @@
-package com.example.drinks.ui
+package com.example.drinks.ui.add
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -32,12 +32,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.drinks.R
 import com.example.drinks.model.Cocktail
 import com.example.drinks.model.Drink
 import com.example.drinks.model.DrinkCocktail
-import com.example.drinks.ui.AddScreen.AddViewModel
-import com.example.drinks.ui.components.MainButton
+import com.example.drinks.ui.components.RightButton
+import com.example.drinks.ui.components.ValidateText
 import com.example.drinks.utils.Route
 import com.example.drinks.utils.UiEvent
 
@@ -46,52 +45,84 @@ import com.example.drinks.utils.UiEvent
 fun AddScreen(
     onNavigate: (UiEvent.Navigate) -> Unit, viewModel: AddViewModel = hiltViewModel()
 ) {
-    var cocktailState by remember {
-        mutableStateOf<Cocktail?>(null)
-    }
-    Box(modifier = Modifier.fillMaxSize()) {
-        Column(
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.align(Alignment.TopCenter)
 
-        ) {
-            Spacer(modifier = Modifier.height((30.dp)))
-            Text(text = "Make your drink", fontSize = 18.sp, fontWeight = FontWeight.Medium)
-            Spacer(modifier = Modifier.height(20.dp))
-            DrinksGridList() { cocktail ->
-                cocktailState = cocktail
+    var cocktailState by remember {
+        mutableStateOf(Cocktail(drinks = ArrayList()))
+    }
+
+    val drinksList by remember { viewModel.drinks }
+
+    var validCocktail by remember {
+        mutableStateOf(false)
+    }
+    var drinksCountInCocktail by remember {
+        mutableStateOf(0)
+    }
+    var buttonClicked by remember {
+        mutableStateOf(false)
+    }
+    Column(
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.fillMaxSize()
+
+    ) {
+        Spacer(modifier = Modifier.height((30.dp)))
+        Text(text = "Make your drink", fontSize = 18.sp, fontWeight = FontWeight.Medium)
+        Spacer(modifier = Modifier.height(20.dp))
+        DrinksGridList(list = drinksList) { cocktail ->
+            cocktailState = cocktail
+        }
+
+        ValidateText(
+            validCocktail = validCocktail,
+            buttonClicked = buttonClicked,
+            text = "please chose more than one drink first"
+        )
+
+        RightButton(text = "Next") {
+            buttonClicked = true
+            cocktailState.drinks.let {
+                for (i in cocktailState.drinks) {
+                    if (i.quantity > 0) {
+
+                        drinksCountInCocktail++
+                    }
+                }
+                if (drinksCountInCocktail > 1) {
+                    validCocktail = true
+                    viewModel.addCocktail(cocktailState)
+                    onNavigate(UiEvent.Navigate(Route.AddDetails.route))
+                } else {
+                    validCocktail = false
+                }
             }
         }
-        MainButton(
-            text = "Next", modifier = Modifier.align(Alignment.BottomEnd)
-        ) {
-            //TODO CHECK IF THERE IS ANY ADDED DRINK TO THIS COCKTAIL BEFORE GOTO NEXT PAGE
-            viewModel.addCocktail(cocktailState)
-            onNavigate(UiEvent.Navigate(Route.AddDetails.route))
-        }
     }
+
 }
 
 @Composable
 fun DrinksGridList(
-    list: List<Drink> = drinksList_1(), modifier: Modifier = Modifier, cocktail: (Cocktail?) -> Unit
+    list: List<Drink>,
+    modifier: Modifier = Modifier,
+    cocktail: (Cocktail) -> Unit
 ) {
 
     val cocktailState by remember {
-        mutableStateOf<Cocktail?>(null)
+        mutableStateOf(Cocktail(drinks = ArrayList()))
     }
     LazyVerticalGrid(columns = GridCells.Fixed(3), modifier = modifier) {
         items(list.size) { index ->
             DrinkItem(item = list[index]) { newDrinkCocktail ->
-                val pos: Int? = cocktailState?.drinks?.indexOf(newDrinkCocktail)
+                val pos: Int = cocktailState.drinks.indexOf(newDrinkCocktail)
                 if (pos != -1) {
-                    pos?.let {
-                        cocktailState?.drinks?.set(it, newDrinkCocktail)
+                    pos.let {
+                        cocktailState.drinks[it] = newDrinkCocktail
                         cocktail(cocktailState)
                     }
                 } else {
-                    cocktailState?.drinks?.add(newDrinkCocktail)
+                    cocktailState.drinks.add(newDrinkCocktail)
                     cocktail(cocktailState)
                 }
             }
@@ -101,13 +132,14 @@ fun DrinksGridList(
 
 @Composable
 fun DrinkItem(
-    item: Drink, currentDrinkCocktail: (DrinkCocktail) -> Unit
+    item: Drink,
+    currentDrinkCocktail: (DrinkCocktail) -> Unit
 ) {
     var counter by remember {
         mutableStateOf(0)
     }
-    var drinkCocktailState by remember {
-        mutableStateOf(DrinkCocktail(item, counter))
+    val drinkCocktailState by remember {
+        mutableStateOf(DrinkCocktail(item.id, counter))
     }
 
     Column(
@@ -130,7 +162,10 @@ fun DrinkItem(
             horizontalArrangement = Arrangement.SpaceAround
         ) {
             MinMaxButton(text = "-") {
-                if (counter > 0) counter--
+                if (counter > 0) {
+                    counter--
+                    drinkCocktailState.quantity = counter
+                }
                 currentDrinkCocktail(drinkCocktailState)
             }
             Spacer(modifier = Modifier.width(5.dp))
@@ -138,6 +173,7 @@ fun DrinkItem(
             Spacer(modifier = Modifier.width(5.dp))
             MinMaxButton(text = "+") {
                 counter++
+                drinkCocktailState.quantity = counter
                 currentDrinkCocktail(drinkCocktailState)
             }
         }
@@ -170,40 +206,3 @@ fun MinMaxButton(text: String, onclick: () -> Unit) {
     }
 
 }
-
-
-fun drinksList_1() = listOf(
-    Drink(
-        name = "Drink 1",
-        description = "Description of Drink 1",
-        image = R.drawable.img_1,
-    ),
-    Drink(
-        name = "Drink 2",
-        description = "Description of Drink 2",
-        image = R.drawable.img_2,
-    ),
-    Drink(
-        name = "Drink 3",
-        description = "Description of Drink 3",
-        image = R.drawable.img_3,
-    ),
-    Drink(
-        name = "Drink 4",
-        description = "Description of Drink 4",
-        image = R.drawable.img_4,
-    ),
-    Drink(
-        name = "Drink 5",
-        description = "Description of Drink 5",
-        image = R.drawable.img_5,
-    ),
-    Drink(
-        name = "Drink 6",
-        description = "Description of Drink 6",
-        image = R.drawable.img_6,
-    ),
-
-
-    )
-

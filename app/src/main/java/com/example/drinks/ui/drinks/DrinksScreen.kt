@@ -30,6 +30,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -37,8 +38,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import coil.ImageLoader
+import coil.compose.rememberAsyncImagePainter
 import com.example.drinks.R
-import com.example.drinks.model.Combination
 import com.example.drinks.model.Drink
 import com.example.drinks.ui.drinks.DrinksViewModel
 import com.example.drinks.utils.Route
@@ -46,8 +48,7 @@ import com.example.drinks.utils.UiEvent
 
 @Composable
 fun DrinksScreen(
-    onNavigate: (UiEvent.Navigate) -> Unit,
-    viewModel: DrinksViewModel = hiltViewModel()
+    onNavigate: (UiEvent.Navigate) -> Unit, viewModel: DrinksViewModel = hiltViewModel()
 ) {
     Column(
         modifier = Modifier
@@ -56,7 +57,7 @@ fun DrinksScreen(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        SearchBar(hint = "Search" , modifier = Modifier.padding(vertical = 10.dp)) { query ->
+        SearchBar(hint = "Search", modifier = Modifier.padding(vertical = 10.dp)) { query ->
             viewModel.search(query)
         }
 
@@ -83,10 +84,11 @@ fun EntryGridList(
 fun Item(
     item: Drink,
     modifier: Modifier = Modifier,
+    viewModel : DrinksViewModel = hiltViewModel(),
     onNavigate: (UiEvent.Navigate) -> Unit,
 ) {
     val defaultDominationColor = MaterialTheme.colorScheme.surface
-    val dominationColor by remember {
+    var dominationColor by remember {
         mutableStateOf(defaultDominationColor)
     }
     Box(contentAlignment = Alignment.Center,
@@ -109,13 +111,18 @@ fun Item(
             }) {
         Column {
 
-
+            val painter = rememberAsyncImagePainter(
+                model =  item.image,
+                onSuccess = { result ->
+                    viewModel.calcDominantColor(result.result.drawable) { color ->
+                        dominationColor = color
+                    }
+                })
             Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                 Image(
-                    painter = painterResource(item.image),
+                    painter = painter,
                     contentDescription = "images",
-                    modifier = Modifier
-                        .size(120.dp)
+                    modifier = Modifier.size(120.dp)
                 )
             }
             Text(
@@ -201,27 +208,27 @@ fun drinksList() = listOf(
     Drink(
         name = "Drink 6",
         description = "Description of Drink 6",
-        image = R.drawable.img_6,
-    ),
-    Drink(
-        name = "Drink 7",
-        description = "Description of Drink 7",
-        image = R.drawable.img_7,
-    ),
-    Drink(
-        name = "Drink 8",
-        description = "Description of Drink 8",
-        image = R.drawable.img_8,
-    ),
-    Drink(
-        name = "Drink 9",
-        description = "Description of Drink 9",
-        image = R.drawable.img_9,
-    ),
-    Drink(
-        name = "Drink 10",
-        description = "Description of Drink 10",
-        image = R.drawable.img_10,
-    ),
+        image = R.drawable.img_6,)
+//    ),
+//    Drink(
+//        name = "Drink 7",
+//        description = "Description of Drink 7",
+//        image = R.drawable.img_7,
+//    ),
+//    Drink(
+//        name = "Drink 8",
+//        description = "Description of Drink 8",
+//        image = R.drawable.img_8,
+//    ),
+//    Drink(
+//        name = "Drink 9",
+//        description = "Description of Drink 9",
+//        image = R.drawable.img_9,
+//    ),
+//    Drink(
+//        name = "Drink 10",
+//        description = "Description of Drink 10",
+//        image = R.drawable.img_10,
+//    ),
 )
 

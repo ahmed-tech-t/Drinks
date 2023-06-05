@@ -2,7 +2,8 @@ package com.example.drinks.di
 
 import android.content.Context
 import androidx.room.Room
-import com.example.drinks.dp.room.DaoApi
+import com.example.drinks.dp.room.CocktailDao
+import com.example.drinks.dp.room.DrinkDao
 import com.example.drinks.model.DrinksDatabase
 import com.example.drinks.repo.DefaultPreferences
 import com.example.drinks.repo.Preferences
@@ -17,7 +18,6 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 class AppModule {
 
-
     @Provides
     @Singleton
     fun provideRoomDatabase(@ApplicationContext context: Context): DrinksDatabase =
@@ -31,11 +31,16 @@ class AppModule {
 
     @Provides
     @Singleton
-    fun provideDao(newsDatabase: DrinksDatabase): DaoApi = newsDatabase.getDaoApi()
+    fun provideDrinkDao(newsDatabase: DrinksDatabase): DrinkDao = newsDatabase.getDrinkDao()
+
+    @Provides
+    @Singleton
+    fun provideCocktailDao(newsDatabase: DrinksDatabase): CocktailDao =
+        newsDatabase.getCocktailDao()
 
     @Singleton
     @Provides
-    fun providePreferences(daoApi: DaoApi): Preferences {
-        return DefaultPreferences(daoApi)
+    fun providePreferences(drinkDao: DrinkDao, cocktailDao: CocktailDao): Preferences {
+        return DefaultPreferences(drinkDao, cocktailDao)
     }
 }

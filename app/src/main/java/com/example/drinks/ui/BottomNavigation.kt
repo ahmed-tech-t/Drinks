@@ -1,7 +1,6 @@
 package com.example.drinks.ui
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -47,13 +46,12 @@ fun BottomNavigationBar(
                             tint = if (selected) Color.Black else Color.DarkGray,
                             contentDescription = item.title
                         )
-                        if (selected) {
-                            Text(
-                                text = item.title,
-                                textAlign = TextAlign.Center,
-                                fontSize = 10.sp
-                            )
-                        }
+
+                        Text(
+                            text = item.title,
+                            textAlign = TextAlign.Center,
+                            fontSize = 10.sp
+                        )
                     }
 
                 }
