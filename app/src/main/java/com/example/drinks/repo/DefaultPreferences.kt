@@ -76,4 +76,8 @@ class DefaultPreferences @Inject constructor(
     override suspend fun upsertCocktail(cocktail: Cocktail) {
         cocktailDao.upsertCocktail(cocktail)
     }
+
+    override suspend fun deleteCocktail(cocktail: Cocktail) {
+        cocktailDao.deleteCocktail(cocktail)
+    }
 }

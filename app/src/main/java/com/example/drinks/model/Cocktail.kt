@@ -10,7 +10,7 @@ import javax.inject.Inject
 data class Cocktail(
     @PrimaryKey(autoGenerate = true)
     val id: Int? =null,
-    var image: Uri? = null,
+    var image: String? = null,
     var name: String ? = null,
     val drinks: ArrayList<DrinkCocktail>
 )

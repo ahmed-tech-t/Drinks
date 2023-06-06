@@ -14,5 +14,6 @@ interface Preferences {
     suspend fun getAllCocktails():Resource<List<Cocktail>>
     suspend fun getCocktailById(id:Int): Resource<Cocktail>
     suspend fun upsertCocktail(cocktail: Cocktail)
+    suspend fun deleteCocktail(cocktail: Cocktail)
 
 }

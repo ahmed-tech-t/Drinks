@@ -1,5 +1,6 @@
 package com.example.drinks.ui
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -30,26 +31,31 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
-import coil.ImageLoader
 import coil.compose.rememberAsyncImagePainter
 import com.example.drinks.R
+import com.example.drinks.model.Cocktail
 import com.example.drinks.model.Drink
 import com.example.drinks.ui.drinks.DrinksViewModel
 import com.example.drinks.utils.Route
 import com.example.drinks.utils.UiEvent
+import kotlin.math.log
 
+private const val TAG = "DrinksScreen"
 @Composable
 fun DrinksScreen(
-    onNavigate: (UiEvent.Navigate) -> Unit, viewModel: DrinksViewModel = hiltViewModel()
+    onNavigate: (UiEvent.Navigate) -> Unit,
+    viewModel: DrinksViewModel
 ) {
+    val cocktailListState = remember {
+        viewModel.cocktailListState
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -60,15 +66,14 @@ fun DrinksScreen(
         SearchBar(hint = "Search", modifier = Modifier.padding(vertical = 10.dp)) { query ->
             viewModel.search(query)
         }
-
-        EntryGridList(onNavigate = onNavigate)
+        cocktailListState.value?.let { EntryGridList(list = it, onNavigate = onNavigate) }
     }
 
 }
 
 @Composable
 fun EntryGridList(
-    list: List<Drink> = drinksList(),
+    list: List<Cocktail>,
     modifier: Modifier = Modifier,
     onNavigate: (UiEvent.Navigate) -> Unit,
 ) {
@@ -79,12 +84,11 @@ fun EntryGridList(
     }
 }
 
-
 @Composable
 fun Item(
-    item: Drink,
+    item: Cocktail,
     modifier: Modifier = Modifier,
-    viewModel : DrinksViewModel = hiltViewModel(),
+    viewModel: DrinksViewModel = hiltViewModel(),
     onNavigate: (UiEvent.Navigate) -> Unit,
 ) {
     val defaultDominationColor = MaterialTheme.colorScheme.surface
@@ -106,17 +110,19 @@ fun Item(
                 )
             )
             .clickable {
-                //TODO MUST SEND COCKTAIL DETAILS FROM HERE TO BOTTOM DIALOG BEFORE NAVIGATE
-                onNavigate(UiEvent.Navigate(Route.Details.route))
+                onNavigate(UiEvent.Navigate(Route.Details.withArgs(item.id)))
             }) {
         Column {
-
             val painter = rememberAsyncImagePainter(
-                model =  item.image,
+                model = item.image?.toUri(),
                 onSuccess = { result ->
+                    Log.d(TAG, "Item: ${item.image}")
                     viewModel.calcDominantColor(result.result.drawable) { color ->
                         dominationColor = color
                     }
+
+                }, onError = {
+                    Log.d(TAG, "Item: ${it.result.throwable.message}")
                 })
             Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                 Image(
@@ -125,12 +131,14 @@ fun Item(
                     modifier = Modifier.size(120.dp)
                 )
             }
-            Text(
-                text = item.name,
-                fontSize = 20.sp,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
-            )
+            item.name?.let {
+                Text(
+                    text = it,
+                    fontSize = 15.sp,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
         }
     }
 }
@@ -208,27 +216,27 @@ fun drinksList() = listOf(
     Drink(
         name = "Drink 6",
         description = "Description of Drink 6",
-        image = R.drawable.img_6,)
-//    ),
-//    Drink(
-//        name = "Drink 7",
-//        description = "Description of Drink 7",
-//        image = R.drawable.img_7,
-//    ),
-//    Drink(
-//        name = "Drink 8",
-//        description = "Description of Drink 8",
-//        image = R.drawable.img_8,
-//    ),
-//    Drink(
-//        name = "Drink 9",
-//        description = "Description of Drink 9",
-//        image = R.drawable.img_9,
-//    ),
-//    Drink(
-//        name = "Drink 10",
-//        description = "Description of Drink 10",
-//        image = R.drawable.img_10,
-//    ),
+        image = R.drawable.img_6,
+    ),
+    Drink(
+        name = "Drink 7",
+        description = "Description of Drink 7",
+        image = R.drawable.img_7,
+    ),
+    Drink(
+        name = "Drink 8",
+        description = "Description of Drink 8",
+        image = R.drawable.img_8,
+    ),
+    Drink(
+        name = "Drink 9",
+        description = "Description of Drink 9",
+        image = R.drawable.img_9,
+    ),
+    Drink(
+        name = "Drink 10",
+        description = "Description of Drink 10",
+        image = R.drawable.img_10,
+    ),
 )
 

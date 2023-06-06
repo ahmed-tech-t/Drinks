@@ -26,11 +26,5 @@ class Converters {
     fun fromGsonToDrinkCocktail(drinkCocktailString: String): DrinkCocktail =
         Gson().fromJson(drinkCocktailString, DrinkCocktail::class.java)
 
-    @TypeConverter
-    fun fromUriToGson(uri: Uri): String = Gson().toJson(uri)
-
-    @TypeConverter
-    fun fromGsonToUri(uriString: String): Uri =
-        Gson().fromJson(uriString, Uri::class.java)
 
 }

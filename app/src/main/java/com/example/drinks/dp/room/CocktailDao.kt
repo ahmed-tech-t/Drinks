@@ -25,4 +25,5 @@ interface CocktailDao {
 
     @Delete
     suspend fun deleteCocktail(cocktail: Cocktail)
+
 }

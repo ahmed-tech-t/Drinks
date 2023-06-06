@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.drinks.R
 import com.example.drinks.model.Cocktail
 import com.example.drinks.model.Drink
 import com.example.drinks.repo.Preferences
@@ -27,11 +28,12 @@ class AddViewModel @Inject constructor(
     }
 
     fun addCocktail(cock: Cocktail) {
+        Log.d(TAG, "addCocktail: ${cock.drinks}")
         cocktailState.value = cock
     }
 
 
-    fun addNewDrink(drink: Drink) = viewModelScope.launch {
+    private fun addNewDrink(drink: Drink) = viewModelScope.launch {
         repo.upsertDrink(drink)
     }
 
@@ -44,9 +46,45 @@ class AddViewModel @Inject constructor(
             is Resource.Error -> Log.d(TAG, "getAllDrinks: ${result.message}")
             is Resource.Loading -> {}
             is Resource.Success -> {
+                if (result.data?.isEmpty() == true) {
+                    for (i in drinksList()) addNewDrink(i)
+                }
                 drinks.value = result.data!!
             }
         }
     }
+
+    private fun drinksList() = listOf(
+        Drink(
+            name = "Drink 1",
+            description = "Description of Drink 1",
+            image = R.drawable.img_1,
+        ),
+        Drink(
+            name = "Drink 2",
+            description = "Description of Drink 2",
+            image = R.drawable.img_2,
+        ),
+        Drink(
+            name = "Drink 3",
+            description = "Description of Drink 3",
+            image = R.drawable.img_3,
+        ),
+        Drink(
+            name = "Drink 4",
+            description = "Description of Drink 4",
+            image = R.drawable.img_4,
+        ),
+        Drink(
+            name = "Drink 5",
+            description = "Description of Drink 5",
+            image = R.drawable.img_5,
+        ),
+        Drink(
+            name = "Drink 6",
+            description = "Description of Drink 6",
+            image = R.drawable.img_6,
+        )
+    )
 
 }

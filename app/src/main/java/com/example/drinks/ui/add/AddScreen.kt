@@ -43,7 +43,8 @@ import com.example.drinks.utils.UiEvent
 
 @Composable
 fun AddScreen(
-    onNavigate: (UiEvent.Navigate) -> Unit, viewModel: AddViewModel = hiltViewModel()
+    onNavigate: (UiEvent.Navigate) -> Unit,
+    viewModel: AddViewModel
 ) {
 
     var cocktailState by remember {

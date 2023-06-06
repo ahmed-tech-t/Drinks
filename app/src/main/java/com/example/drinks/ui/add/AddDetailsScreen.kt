@@ -45,9 +45,9 @@ import com.example.drinks.utils.UiEvent
 @Composable
 fun AddDetailsScreen(
     onNavigate: (UiEvent.Navigate) -> Unit,
-    viewModel: AddViewModel = hiltViewModel()
+    viewModel: AddViewModel
 ) {
-    val cocktailState by remember {
+    var cocktailState by remember {
         viewModel.cocktailState
     }
     var cocktailNameState by remember {
@@ -63,9 +63,6 @@ fun AddDetailsScreen(
     var buttonClicked by remember {
         mutableStateOf(false)
     }
-    LaunchedEffect(key1 = cocktailState, block ={
-        Log.d("TAG", "AddDetailsScreen: ${cocktailState.drinks}")
-    } )
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
@@ -90,7 +87,7 @@ fun AddDetailsScreen(
         RightButton(text = "Save") {
             buttonClicked = true
             cocktailState.name = cocktailNameState
-            cocktailState.image = selectedImageUri
+            cocktailState.image = selectedImageUri.toString()
 
             if (cocktailNameState.isNotEmpty() && selectedImageUri != null) {
                 validCocktail = true
